@@ -132,3 +132,15 @@ Hibernate:
 Exception in thread "Thread-2" org.springframework.orm.ObjectOptimisticLockingFailureException: Batch update returned unexpected row count from update [0]; actual row count: 0; expected: 1; statement executed: update board set name=?, version=? where id=? and version=?; nested exception is org.hibernate.StaleStateException: Batch update returned unexpected row count from update [0]; actual row count: 0; expected: 1; statement executed: update board set name=?, version=? where id=? and version=?
 ```
 
+
+
+## 4. Java의 HashMap에는 키와 밸류가 null일 수 있다.
+
+- HashMap에 key와 value는 null이어도 NPE가 발생하지 않는다.
+- bucket 0에 저장한다고 한다.
+
+
+
+- ConcurrentHashMap의 경우 null일 경우 NPE를 발생시킨다
+
+![image-20221112150412211](images/image-20221112150412211.png)
