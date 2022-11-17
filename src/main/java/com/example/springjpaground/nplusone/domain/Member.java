@@ -1,4 +1,4 @@
-package com.example.springjpaground.example.domain;
+package com.example.springjpaground.nplusone.domain;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -12,10 +12,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Builder
-@Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class Member {
 
     @Id
@@ -28,9 +27,13 @@ public class Member {
     @JoinColumn(name = "team_id")
     private Team team;
 
-    public Member(Long id, String name, Team team) {
-        this.id = id;
+    @Builder
+    public Member(String name, Team team) {
         this.name = name;
+        this.team = team;
+    }
+
+    public void updateTeam(Team team) {
         this.team = team;
     }
 }

@@ -70,7 +70,7 @@ Hibernate:
         product0_.id as id1_2_0_,
         product0_.product_price as product_2_2_0_ 
     from
-        product product0_ 
+        item product0_ 
     where
         product0_.id=?
 
@@ -89,7 +89,7 @@ Hibernate:
         product0_.id as id1_2_0_,
         product0_.product_price as product_2_2_0_ 
     from
-        product product0_ 
+        item product0_ 
     where
         product0_.product_price=?
 ```

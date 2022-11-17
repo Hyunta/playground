@@ -13,7 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
-class ProductServiceTest {
+class ItemServiceTest {
 
     //OneToOne일 경우 연관관계의 주인이 아닌 쪽은 Lazy가 걸린다.
 
