@@ -7,5 +7,6 @@ import org.springframework.data.jpa.repository.Lock;
 
 public interface BoardRepository extends JpaRepository<Board, Long> {
 
+    @Lock(LockModeType.OPTIMISTIC_FORCE_INCREMENT)
     Optional<Board> findById(Long id);
 }

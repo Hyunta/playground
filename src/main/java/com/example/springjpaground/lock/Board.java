@@ -6,8 +6,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Version;
+import lombok.Getter;
 
 @Entity
+@Getter
 public class Board {
 
     @Id

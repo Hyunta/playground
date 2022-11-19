@@ -23,20 +23,30 @@ class BoardRepositoryTest {
     @BeforeEach
     void setUp() {
         boardRepository.save(new Board("board1"));
-        boardRepository.save(new Board("board2"));
         entityManager.clear();
     }
 
     @Test
     @DisplayName("낙관적 락이 잘 작동한다.")
     void optimistic_lock() throws InterruptedException {
-        Thread thread1 = new Thread(() -> boardService.update(1L));
-        Thread thread2 = new Thread(() -> boardService.update(1L));
+        Long version = boardRepository.findById(1L).get().getVersion();
+
+        System.out.println("version = " + version);
+        Thread thread1 = new Thread(() -> boardService.update(1L, "NameA"));
+        Thread thread2 = new Thread(() -> boardService.update(1L, "NameB"));
 
         thread1.start();
         thread2.start();
 
         thread1.join();
         thread2.join();
+        Long updateVersion = boardRepository.findById(1L).get().getVersion();
+
+        for (int i = 0; i < 20; i++) {
+            Board board = boardRepository.findById(1L).get();
+//            boardService.update(1L, "name");
+            System.out.println("board.getVersion() = " + board.getVersion());
+        }
+        System.out.println("updateVersion = " + updateVersion);
     }
 }

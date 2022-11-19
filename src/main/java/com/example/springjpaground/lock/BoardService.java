@@ -14,10 +14,10 @@ public class BoardService {
         this.boardRepository = boardRepository;
     }
 
-    public void update(final Long id) {
+    public void update(final Long id, final String name) {
         try {
             Board board = boardRepository.findById(id).get();
-            board.update("new Name");
+            board.update(name);
         } catch (ObjectOptimisticLockingFailureException e) {
             System.out.println("optimistic lock failed");
         }
