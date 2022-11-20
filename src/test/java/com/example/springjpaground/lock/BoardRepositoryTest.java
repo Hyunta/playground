@@ -2,6 +2,7 @@ package com.example.springjpaground.lock;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -44,8 +45,7 @@ class BoardRepositoryTest {
 
         for (int i = 0; i < 20; i++) {
             Board board = boardRepository.findById(1L).get();
-//            boardService.update(1L, "name");
-            System.out.println("board.getVersion() = " + board.getVersion());
+            Assertions.assertThat(board.getVersion()).isEqualTo(updateVersion);
         }
         System.out.println("updateVersion = " + updateVersion);
     }
