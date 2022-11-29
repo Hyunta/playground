@@ -29,29 +29,43 @@ public class PubSub2 {
         return new Publisher<Integer>() {
             @Override
             public void subscribe(Subscriber<? super Integer> sub) {
-                pub.subscribe(new Subscriber<Integer>() {
-                    @Override
-                    public void onSubscribe(Subscription subscription) {
-                        sub.onSubscribe(subscription); // 하는 일 없이 중개만 한다.
-                    }
-
+                pub.subscribe(new DelegateSub(sub) {
                     @Override
                     public void onNext(Integer item) {
                         sub.onNext(f.apply(item));
                     }
-
-                    @Override
-                    public void onError(Throwable throwable) {
-                        sub.onError(throwable);
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        sub.onComplete();
-                    }
                 });
             }
         };
+    }
+
+    public static class DelegateSub implements Subscriber<Integer> {
+
+        Subscriber sub;
+
+        public DelegateSub(Subscriber sub) {
+            this.sub = sub;
+        }
+
+        @Override
+        public void onSubscribe(Subscription subscription) {
+            sub.onSubscribe(subscription); // 하는 일 없이 중개만 한다.
+        }
+
+        @Override
+        public void onNext(Integer item) {
+            sub.onNext(item);
+        }
+
+        @Override
+        public void onError(Throwable throwable) {
+            sub.onError(throwable);
+        }
+
+        @Override
+        public void onComplete() {
+            sub.onComplete();
+        }
     }
 
     private static Subscriber<Integer> LogSub() {
