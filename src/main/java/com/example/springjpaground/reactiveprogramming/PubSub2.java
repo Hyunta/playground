@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.concurrent.Flow.Publisher;
 import java.util.concurrent.Flow.Subscriber;
 import java.util.concurrent.Flow.Subscription;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -21,7 +20,7 @@ public class PubSub2 {
         Publisher<Integer> pub = iterPub(Stream.iterate(1, a -> a + 1)
                 .limit(10)
                 .collect(Collectors.toList()));
-        Publisher<Integer> mapPub = mapPub(pub, s -> s * 10);
+        Publisher<String> mapPub = mapPub(pub, s -> "[" + s + "]");
 //        Publisher<Integer> sumPub = sumPub(pub);
 //        Publisher<Integer> reducePub = reducePub(pub, 0, (a, b) -> a + b);
         mapPub.subscribe(LogSub());
@@ -80,12 +79,11 @@ public class PubSub2 {
 //            }
 //        };
 //    }
-
-    private static <T> Publisher<T> mapPub(Publisher<T> pub, Function<T, T> f) {
-        return new Publisher<T>() {
+    private static <T, R> Publisher<R> mapPub(Publisher<T> pub, Function<T, R> f) {
+        return new Publisher<R>() {
             @Override
-            public void subscribe(Subscriber<? super T> sub) {
-                pub.subscribe(new DelegateSub<T>(sub) {
+            public void subscribe(Subscriber<? super R> sub) {
+                pub.subscribe(new DelegateSub<T, R>(sub) {
                     @Override
                     public void onNext(T item) {
                         sub.onNext(f.apply(item));
@@ -95,11 +93,11 @@ public class PubSub2 {
         };
     }
 
-    public static class DelegateSub<T> implements Subscriber<T> {
+    public static class DelegateSub<T, R> implements Subscriber<T> {
 
         Subscriber sub;
 
-        public DelegateSub(Subscriber sub) {
+        public DelegateSub(Subscriber<? super R> sub) {
             this.sub = sub;
         }
 
