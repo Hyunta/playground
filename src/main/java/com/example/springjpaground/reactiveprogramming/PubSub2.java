@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.concurrent.Flow.Publisher;
 import java.util.concurrent.Flow.Subscriber;
 import java.util.concurrent.Flow.Subscription;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -21,8 +22,41 @@ public class PubSub2 {
                 .limit(10)
                 .collect(Collectors.toList()));
 //        Publisher<Integer> mapPub = mapPub(pub, s -> s * 10);
-        Publisher<Integer> sumPub = sumPub(pub);
-        sumPub.subscribe(LogSub());
+//        Publisher<Integer> sumPub = sumPub(pub);
+        Publisher<Integer> reducePub = reducePub(pub, 0, (a, b) -> a + b);
+        reducePub.subscribe(LogSub());
+    }
+
+    /**
+     * 1,2,3,4,5
+     * 0 -> (0,1) -> 0 + 1 = 1
+     * 1 -> (1,2) -> 1 + 2 = 3
+     * 2 -> (3,3) -> 3 + 3 = 6
+     * 3 -> (6,4) -> 6 + 4 = 10
+     * 4 -> (10, 5) -> 10 + 5 = 15
+     * onComplete
+     */
+    private static Publisher<Integer> reducePub(Publisher<Integer> pub, int init,
+                                                BiFunction<Integer, Integer, Integer> bf) {
+        return new Publisher<Integer>() {
+            @Override
+            public void subscribe(Subscriber<? super Integer> subscriber) {
+                pub.subscribe(new DelegateSub(subscriber) {
+                    int result = init;
+
+                    @Override
+                    public void onNext(Integer item) {
+                        result = bf.apply(result, item);
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        sub.onNext(result);
+                        sub.onComplete();
+                    }
+                });
+            }
+        };
     }
 
     private static Publisher<Integer> sumPub(Publisher<Integer> pub) {
