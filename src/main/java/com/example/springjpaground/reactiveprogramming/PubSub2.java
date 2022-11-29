@@ -20,8 +20,9 @@ public class PubSub2 {
         Publisher<Integer> pub = iterPub(Stream.iterate(1, a -> a + 1)
                 .limit(10)
                 .collect(Collectors.toList()));
-        Publisher<Integer> mapPub = mapPub(pub, (Function<Integer, Integer>) s -> s * 10);
-        mapPub.subscribe(LogSub());
+        Publisher<Integer> mapPub = mapPub(pub, s -> s * 10);
+        Publisher<Integer> map2Pub = mapPub(mapPub, s -> -s);
+        map2Pub.subscribe(LogSub());
     }
 
     private static Publisher<Integer> mapPub(Publisher<Integer> pub, Function<Integer, Integer> f) {
@@ -31,22 +32,22 @@ public class PubSub2 {
                 pub.subscribe(new Subscriber<Integer>() {
                     @Override
                     public void onSubscribe(Subscription subscription) {
-                        sub.onSubscribe(subscription);
+                        sub.onSubscribe(subscription); // 하는 일 없이 중개만 한다.
                     }
 
                     @Override
                     public void onNext(Integer item) {
-
+                        sub.onNext(f.apply(item));
                     }
 
                     @Override
                     public void onError(Throwable throwable) {
-
+                        sub.onError(throwable);
                     }
 
                     @Override
                     public void onComplete() {
-
+                        sub.onComplete();
                     }
                 });
             }
