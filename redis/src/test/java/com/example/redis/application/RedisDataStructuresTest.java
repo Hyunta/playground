@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.lettuce.core.RedisFuture;
 import io.lettuce.core.api.async.RedisAsyncCommands;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -68,5 +69,23 @@ class RedisDataStructuresTest {
         System.out.println("resultMap = " + resultMap);
         assertThat(result).isEqualTo("Kim");
         assertThat(resultMap.containsKey(firstName)).isTrue();
+    }
+
+    @Test
+    void sortedSets() throws ExecutionException, InterruptedException {
+        String key = "sortedSet";
+        asyncCommands.zadd(key, 1, "one");
+        asyncCommands.zadd(key, 4, "four");
+        asyncCommands.zadd(key, 5, "two");
+        asyncCommands.zadd(key, 2, "two");
+        // 중복이 불가능, 뒤에 넣은 값이 덮어씌운다.
+
+        List<String> valuesForward = asyncCommands.zrange(key, 0, 3).get();
+        List<String> valuesReverse = asyncCommands.zrevrange(key, 0, 3).get();
+        System.out.println("valuesForward = " + valuesForward);
+        System.out.println("valuesReverse = " + valuesReverse);
+
+        assertThat(valuesForward.get(0)).isEqualTo("one");
+        assertThat(valuesReverse.get(0)).isEqualTo("four");
     }
 }
