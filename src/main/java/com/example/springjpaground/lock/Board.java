@@ -6,10 +6,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Version;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 @Entity
 @Getter
+@EqualsAndHashCode
 public class Board {
 
     @Id
@@ -26,6 +28,11 @@ public class Board {
     }
 
     public Board(String name) {
+        this.name = name;
+    }
+
+    public Board(Long id, String name) {
+        this.id = id;
         this.name = name;
     }
 
